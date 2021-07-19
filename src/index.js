@@ -1,17 +1,58 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { createStore } from 'redux';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+console.log('Starting banking app for multiple accounts.');
+console.log('This is the second console message');
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+const defaultState = {
+	checking: 100,
+	savings: 100
+};
+
+const ACTION_DEPOSIT = 'deposit';
+const ACTION_WITHDRAWAL = 'withdrawal';
+
+function createDeposit(account, amount) {
+	return {
+		type: ACTION_DEPOSIT,
+		payload: {
+			account,
+			amount
+		}
+	};
+}
+
+function createWithdrawal(account, amount) {
+	return {
+		type: ACTION_WITHDRAWAL,
+		payload: {
+			account,
+			amount
+		}
+	};
+}
+
+function accounts(state=defaultState, action) {
+	switch(action.type) {
+	case ACTION_DEPOSIT:
+		return {
+			...state,
+			[action.payload.account]: state[action.payload.account] + action.payload.amount
+		};
+	case ACTION_WITHDRAWAL:
+		return {
+			...state,
+			[action.payload.account]: state[action.payload.account] - action.payload.amount
+		};	}
+	return state;
+}
+
+const store = createStore(accounts);
+store.subscribe(() => {
+	console.log('=== state has updated ===');
+	const state = store.getState();
+	console.log(state);
+});
+
+window.store = store;
+window.createDeposit = createDeposit;
+window.createWithdrawal = createWithdrawal;
